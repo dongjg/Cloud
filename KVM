@@ -1,0 +1,84 @@
+一、搭建KVM服务器
+  1、虚拟化概念
+    #who -b  查看系统上次启动时间
+    virtualization资源管理
+    #yum -y install git
+    #git clone git://172.40.53.65/nsd1810.git
+    #git clone git://124.207.192.18/nsd1810.git
+    #cd nsd1810
+    #git pull
+    
+    #cat /proc/cupinfo 查看cpu信息
+    #lsmod    //显示系统已加载模块
+  2、必备软件
+    -qemu-kvm：为kvm提供底层仿真支持
+    -libvirt-daemon：libvirtd守护进程，管理虚拟机
+    -libvirt-client：用户端软件，提供客户端管理命令
+    -libvirt-daemon-driver-qemu：libvirtd连接qemu的驱动
+  3、虚拟化平台的安装
+    #yum -y install qemu-kvm libvirt-daemon libvirt-client libvirt-daemon-driver-qemu
+    #systemctl start libvirtd
+  4、虚拟机组成
+    -内核虚拟化模块（KVM）
+    -系统设备仿真（QEMU）
+    -虚拟机管理程序（LIBVIRT）
+    
+    -虚拟机声明配置文件：XML文件
+    -虚拟机硬盘：磁盘镜像文件
+  5、virsh命令工具介绍
+    #virsh
+    格式：#virsh 控制命令 [虚拟机名称] [参数]
+    
+    -查看KVM节点信息
+      #virsh nodeinfo
+    -列出虚拟机
+      #virsh list [--all]
+    -列出虚拟网络
+      #virsh net-list [--all]
+    -查看指定虚拟机的信息
+      #virsh dominfo 虚拟机名称
+    -查看虚拟网卡
+      #virsh domiflist 虚拟机名称
+    -运行|重启|关闭指定的虚拟机
+      #virsh start|reboot|shutdown 虚拟机名称
+    -强制关闭指定的虚拟机
+      #virsh destory 虚拟机名称
+    -将指定的虚拟机设为开机自动运行
+      #virsh autostart 虚拟机名称
+      #virsh autostart --disable 虚拟机名称    //开机不自动启动
+    
+    -
+      virsh -c qemu+ssh://root@172.40.52.107/system
+  6、常用镜像盘类型
+    -文件格式
+      
+二、
+三、
+四、
+五、
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
