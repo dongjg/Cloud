@@ -1,3 +1,9 @@
+虚拟化服务平台
+  KVM/QENU/LIBVIRTD
+  -kvm是linux内核的模块，它需要CPU的支持，采用硬件辅助虚拟化技术Intel-VT，AMD-V
+    内存的相关如Intel的EPT，AMD的RVI技术
+  -qemu是一个虚拟化仿真工具，通过ioctl与内核kvm交互完成对硬件的虚拟化支持
+  -Libvirt是一个对虚拟化管理的接口和工具，提供用户端程序virsh,virt-install,virt-manager,virt-view与用户交互
 一、搭建KVM服务器
   1、虚拟化概念
     #who -b  查看系统上次启动时间
