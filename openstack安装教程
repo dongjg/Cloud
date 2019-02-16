@@ -1,0 +1,22 @@
+创建新的镜像文件
+  #qemu-img create -f qcow2 node1.img 50G
+使用后端盘创建一个新的镜像文件
+  #qemu-img create -b node.qcow2 -f qcow2 node1.img                 //node.qcow2是后端盘虚拟机模版，我们可以自定义制作虚拟机模版
+查看镜像文件信息
+  #qemu-img info node1.img
+创建一个虚拟网络
+  #vim /etc/libvirt/qemu/networks/vbr.xml
+      <network>
+        <name>vbr</name>                                            //vbr为虚拟网络的名字
+        <bridge name="vbr"/>
+        <forward mode="nat"/>
+        <ip address="192.168.1.254" netmask="255.255.255.0">        //ip为192.168.1.254
+          <dhcp>
+            <range start="192.168.1.100" end="192.168.1.200"/>      //ip范围是100-200
+          </dhcp>
+        </ip>
+      </network> 
+启动虚拟网络vbr
+  #vrish net-define vbr                 //定义vbr虚拟网络
+  #virsh net-autostart vbr              //启动虚拟网络vbr，并设置为开机自启
+  #ifconfig
