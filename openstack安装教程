@@ -22,12 +22,4 @@
   #ifconfig
 
 
-guestmount实现离线访问
-  用法：guestmount -a 虚拟机磁盘路径 -i /挂载点
-      -a  指定虚拟磁盘
-      -i  挂载点
-  #guestmount  -a  node1.qcow2  -i  /mnt/kdisk
-  #cd /mnt/kdisk
-  #ls
-    bin       home      media      opt        sbin     tmp
-    boot      lib      misc       proc       selinux     us
+
