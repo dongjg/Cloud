@@ -20,6 +20,103 @@
   #vrish net-define vbr                 //定义vbr虚拟网络
   #virsh net-autostart vbr              //启动虚拟网络vbr，并设置为开机自启
   #ifconfig
+给两台虚拟机配置静态ip
+  #echo openstack > /etc/hostname
+  #hostname openstack                   //另一台改名为nova01
+  #vim /etc/sysconfig/network-scripts/ifcfg-eth0  
+    DEVICE="eth0"
+    ONBOOT="yes"
+    IPV6INIT="no"
+    IPV4_FAILURE_FATAL="no"
+    NM_CONTROLLED="no"
+    TYPE="Ethernet"
+    BOOTPROTO="static"
+    IPADDR="192.168.1.11"
+    PREFIX=24
+    GATEWAY=192.168.1.254
+  #systemctl restart network
+给openstack主机添加eth1网卡（nova01同样要配置）
+  #virsh -c qemu:///system attach-interface openstack bridge private2 --model virtio
+  #cd /etc/sysconfig/network-scripts
+  #cp ifcfg-eth0 ifcfg-eth1
+  #vim ifcfg-eth1
+    DEVICE="eth1"
+    ONBOOT="yes"
+    IPV6INIT="no"
+    IPV4_FAILURE_FATAL="no"
+    NM_CONTROLLED="no"
+    TYPE="Ethernet"
+    BOOTPROTO="static"
+    IPADDR="192.168.4.11"
+    PREFIX=24
+    GATEWAY=192.168.1.254
+  #systemctl restart network
+域名解析(两台虚拟即都要配置)
+  #vim /etc/hosts
+    192.168.1.10 openstack
+    192.168.1.12 nova01
+配置DNS服务器，为所有客户端提供服务
+  #yum -y install bind bind-chroot
+  #vim /etc/named.conf
+    options {
+        listen-on port 53 { 192.168.1.3; };         //修改ip
+           allow-query     { any; };                //允许所有
+        recursion yes;
+        forwarders { 172.40.52.111; };                //转发dns,真机的服务器地址
+        dnssec-enable no;
+        dnssec-validation no;
+    };
+  #systemctl restart named
+配置NTP服务器
+  #yum -y install chrony
+  #vim /etc/chrony.conf
+    server ntp1.aliyun.com iburst
+    bindacqaddress 0.0.0.0
+    allow 0/0                       //允许所有人使用我的时间服务器 
+    cmdallow 127.0.0.1              //控制指令
+  #systemctl restart chronyd
+  #chronyc sources -v                //出现*号代表NTP时间可用
+    ^* 120.25.115.20                 2  10   377   118   -552us[-2282us] +/-   24ms
+在openstack主机上配置卷组
+  #qemu-img  create -f qcow2 disk.img 50G
+  # virsh -c qemu:///system attach-disk openstack \
+      /var/lib/libvirt/images/node1.img vdb --subdriver qcow2 --sourcetype file
+  #yum -y install lvm2
+  #pvcreate /dev/vdb
+  #vgcreate cinder-volumes /dev/vdb
+安装openstack的依赖包
+  #yum install -y qemu-kvm libvirt-client libvirt-daemon libvirt-daemon-driver-qemu python-setuptools
+部署openstack
+  #yum -y install openstack-packstack
+  #packstack --gen-answer-file=answer.ini                   //应答文件
+  #vim answer.ini 
+    11 CONFIG_DEFAULT_PASSWORD=redhat                     //密码
+    42 CONFIG_SWIFT_INSTALL=n
+    75 CONFIG_NTP_SERVERS=192.168.1.3                     //时间服务器的地址
+    554 CONFIG_CINDER_VOLUMES_CREATE=n                    //创建卷,已经手动创建过了
+    840 CONFIG_NEUTRON_ML2_TYPE_DRIVERS=flat,vxlan        //驱动类型
+    876 CONFIG_NEUTRON_ML2_VXLAN_GROUP=239.1.1.5          //设置组播地址,最后一个随意不能为0和255,其他固定
+    910 CONFIG_NEUTRON_OVS_BRIDGE_MAPPINGS=physnet1:br-ex //物理网桥的名称
+    921 CONFIG_NEUTRON_OVS_BRIDGE_IFACES=br-ex:eth0       //br-ex桥的名称与eth0连接，管理eth0,网桥与哪个物理网卡连接
+    936 CONFIG_NEUTRON_OVS_TUNNEL_IF=eth1
+    1179 CONFIG_PROVISION_DEMO=n                          //DEMO是否测试
+  # packstack    --answer-file=answer.ini                 //本操作执行成功需20分钟左右
+      **** Installation completed successfully ****       //出现这个为成功
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
 
 
 
