@@ -1,0 +1,75 @@
+一、配置网络YUM源
+  #yum -y install vsftpd
+  #vim /etc/vsftpd/vsftpd.conf
+    listen=YES
+    listen_ipv6=NO
+  #systemctl restart vsftpd
+  #mkdir /var/ftp/CentOS
+  #mount /iso/CentOS-7-x86_64-DVD-1708.iso /var/ftp/CentOS      //临时挂载
+  #vim /etc/yum.repos.d/dvd.repo
+    [dvd]
+    name=dvd
+    baseurl=ftp://192.168.1.254/CentOS
+    enabled=1
+    gpgcheck=0
+  #yum clean all
+  #yum repolist
+  #cd /var/lib/libvirt/images/
+  #qemu-img create -f qcow2 node.qcow2 16G
+二、安装虚拟机
+  #virt-manager
+  注意事项：
+          -安装操作系统选择：网络安装
+          -URL：ftp://192.168.1.254/CentOS
+          -cpu选择自定义存储：/var/lib/libvirt/images/node.qcow2
+          -选择网络：vbr
+          -选择分区：选择创建分区，只创建一个根分区
+三、制作虚拟机模版
+  1、禁用SeLinux
+    #vim /etc/selinux/config
+      SELINUX=disabled
+  2、卸载防火墙与NetworkManager
+    #yum -y remove  NetworkManager-* firewalld-* python-firewall
+  3、配置YUM源
+    #vim /etc/yum.repos.d/dvd.repo
+      [dvd]
+      name=dvd
+      baseurl=ftp://192.168.1.254/centos
+      enabled=1
+      gpgcheck=0
+    # yum clean all
+    # yum repolist
+  4、导入公钥（注意把gpgcheck=0改成gpgcheck=1）
+    # lftp 192.168.1.254
+    lftp 192.168.4.254:~> cd centos
+    lftp 192.168.4.254:/centos> get RPM-GPG-KEY-CentOs-7
+    lftp 192.168.4.254:/centos> exit
+    # rpm --import RPM-GPG-KEY-CentOs-7
+    # yum -y install net-tools vim-enhanced bridge-utils psmisc
+  5、配置网卡
+    # vim /etc/sysconfig/network-scripts/ifcfg-eth0
+      DEVICE="eth0"
+      ONBOOT="yes"
+      IPV6INIT="no"
+      TYPE="Ethernet"
+      BOOTPROTO ="dhcp"
+    # systemctl restart network
+  6、禁用空路由
+    # vim /etc/sysconfig/network
+      NOZEROCONF="yes"
+  7、添加console配置
+    #vim /etc/default/grub
+      GRUB_CMDLINE_LINUX="biosdevname=0 net.ifnames=0 console=ttyS0,115200n8"
+      GRUB_DISABLE_LINUX_UUID="true"
+      GRUB_ENABLE_LINUX_LABEL="true"
+  8、重新生成grub.cfg
+    # grub2-mkconfig   -o  /boot/grub2/grub.cfg
+  9、安装扩展分区软件
+    # yum  install  -y  cloud-utils-growpart
+  10、第一次开机自动扩容
+    # /usr/bin/growpart /dev/vda 1
+    # /usr/sbin/xfs_growfs   /
+  11、关闭虚拟机后执行信息清理工作
+    # virt-sysprep -d centos7.0    //在真机上面操作，centos7.0为虚拟机名称
+
+ 
