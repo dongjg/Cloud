@@ -55,6 +55,87 @@
   #vim /etc/hosts
     192.168.1.10 openstack
     192.168.1.12 nova01
+配置YUM源
+  # mkdir /var/ftp/system  
+  # mkdir /var/ftp/extras 
+  # mkdir /var/ftp/HEL7OSP
+  # vim /etc/fstab
+      /iso/RHEL7OSP-10.iso  /var/ftp/HEL7OSP iso9660 defaults 0 0
+      /iso/CentOS7-1708.iso  /var/ftp/system iso9660 defaults 0 0
+      /iso/RHEL7-extras.iso  /var/ftp/extras iso9660 defaults 0 0
+  # mount –a
+  # vim /etc/yum.repos.d/local.repo
+    [local_repo]
+    name=CentOS-$releasever - Base
+    baseurl="ftp://192.168.1.254/system"
+    enabled=1
+    gpgcheck=1
+    
+    [local_extras]
+    name=extras
+    baseurl="ftp://192.168.1.254/extras"
+    enabled=1
+    gpgcheck=0
+    
+    [1local_devtools-rpms]
+    name=devtools-rpms
+    baseurl="ftp://192.168.1.254/HEL7OSP/rhel-7-server-openstack-10-devtools-rpms"
+    enabled=1
+    gpgcheck=0
+    
+    [2local_optools-rpms]
+    name=optools-rpms
+    baseurl="ftp://192.168.1.254/HEL7OSP/rhel-7-server-openstack-10-optools-rpms"
+    enabled=1
+    gpgcheck=0
+    
+    [3local_rpms]
+    name=rpms
+    baseurl="ftp://192.168.1.254/HEL7OSP/rhel-7-server-openstack-10-rpms"
+    enabled=1
+    gpgcheck=0
+    
+    [4local_tools-rpms]
+    name=tools-rpms
+    baseurl="ftp://192.168.1.254/HEL7OSP/rhel-7-server-openstack-10-tools-rpms"
+    enabled=1
+    gpgcheck=0
+    
+    [5local_mon-rpms]
+    name=mon-rpms
+    baseurl="ftp://192.168.1.254/HEL7OSP/rhel-7-server-rhceph-2-mon-rpms"
+    enabled=1
+    gpgcheck=0
+    
+    [6local_osd-rpms]
+    name=osd-rpms
+    baseurl="ftp://192.168.1.254/HEL7OSP/rhel-7-server-rhceph-2-osd-rpms"
+    enabled=1
+    gpgcheck=0
+    
+    [7local_rhceph-2-tools-rpms]
+    name=rhceph-2-tools-rpms
+    baseurl="ftp://192.168.1.254/HEL7OSP/rhel-7-server-rhceph-2-tools-rpms"
+    enabled=1
+    gpgcheck=0
+    
+    [8local_agent-rpms]
+    name=agent-rpms
+    baseurl="ftp://192.168.1.254/HEL7OSP/rhel-7-server-rhscon-2-agent-rpms"
+    enabled=1
+    gpgcheck=0
+    
+    [9local_installer-rpms]
+    name=installer-rpms
+    baseurl="ftp://192.168.1.254/HEL7OSP/rhel-7-server-rhscon-2-installer-rpms"
+    enabled=1
+    gpgcheck=0
+    
+    [10local_rhscon-2-main-rpms]
+    name=rhscon-2-main-rpms
+    baseurl="ftp://192.168.1.254/HEL7OSP/rhel-7-server-rhscon-2-main-rpms"
+    enabled=1
+    gpgcheck=0
 配置DNS服务器，为所有客户端提供服务
   #yum -y install bind bind-chroot
   #vim /etc/named.conf
