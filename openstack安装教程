@@ -20,3 +20,14 @@
   #vrish net-define vbr                 //定义vbr虚拟网络
   #virsh net-autostart vbr              //启动虚拟网络vbr，并设置为开机自启
   #ifconfig
+
+
+guestmount实现离线访问
+  用法：guestmount -a 虚拟机磁盘路径 -i /挂载点
+      -a  指定虚拟磁盘
+      -i  挂载点
+  #guestmount  -a  node1.qcow2  -i  /mnt/kdisk
+  #cd /mnt/kdisk
+  #ls
+    bin       home      media      opt        sbin     tmp
+    boot      lib      misc       proc       selinux     us
