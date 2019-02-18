@@ -1,0 +1,25 @@
+一、容器
+  -Docker是一套完整的容器管理系统
+  -Docker提供一组命令，让用户更加方便直接的使用容器技术，而不需要关心底层内核技术
+  -内核版本3.0以上，64位操作系统，至少RHEL6.5以上版本，强烈推荐RHEL7，必须关闭防火墙
+  -容器技术的核心由以下几个内核技术组成：
+                                    -Cgroups(Control Groups)资源管理
+                                    -NameSpace-进程隔离（主机名、用户、进程、网络、信号向量、文件系统）
+                                    -SELinux安全
+                
+二、
+  1、docker images
+  2、docker search centos
+  3、docker pull 镜像文件
+  4、docker 子命令 子命令参数
+  5、docker help 子命令
+  6、docker help search     查看serach子命令帮助     
+  7、man docker-子命令
+  8、
+三、镜像的备份与恢复
+  1、备份
+    #docker save 名称:标签 > 名称.tar  (注：名称+标签=唯一)
+  2、恢复
+    #docker load < 名称.tar
+  3、删除
+    #docker rmi 镜像:标签
