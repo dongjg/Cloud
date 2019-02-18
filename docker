@@ -60,8 +60,12 @@
   13、进入容器
     #docker attach 容器id       //进入容器，exit会导致容器关闭
     #docker exec 容器id         //进入容器，退出时不会关闭容器
-  14、
-  
+  14、查服务启动程序
+    #rpm -ql 软件名|grep 服务名
+    #rpm -ql httpd|grep httpd.service
+  15、路由转发
+    #echo 1 >/proc/sys/net/ipv4/ip_forward
+    
   
   
   
