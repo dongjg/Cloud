@@ -1,0 +1,33 @@
+#ctrl+pq
+#yum -y install  vim net-tools psmisc iproute tree
+
+一、Dockerfile语法格式
+  - FROM
+  -
+  -
+  -
+  -
+  -
+  -
+  -
+  创建Dockerfile
+    #vim Dockerfile
+      FROM centos:latest
+      RUN rm -rf /etc/yum.repos.d/*
+      ADD local.repo /etc/yum.repos.d/local.repo        //local.repo必须和Dockerfile在同一目录下
+      RUN yum -y install vim psmisc net-tools tree
+      
+    #docker build -t newos:latest .
+    
+  自定义镜像
+    #vim Dockerfile
+      FROM myos:latest
+      RUN yum -y install openssh-server initscripts
+      RUN sshd-keygen
+      RUN echo 123456 | passwd --stdin root
+      ENV EnvironmentFile=/etc/sysconfig/sshd
+      EXPOSE 22
+      CMD ["/usr/sbin/sshd","-D"]
+二、
+
+三、
