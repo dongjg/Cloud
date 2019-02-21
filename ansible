@@ -1,0 +1,36 @@
+一、ansible
+  1、是一款IT自动化和DevOps软件，基于Python研发，实现批量操作系统配置，批量程序部署
+    批量运行命令等功能
+  2、可以实现
+    -自动化部署APP
+    -自动化管理配置项
+    -自动化持续交付
+    -自动化（AWS）云服务管理
+  3、特性
+    -模块化设计，调用特定的模块完成特定任务
+    -基于Python语言实现，依赖包：paramiko,PyYAML(半结构化语言),Jinja2,httplib2,six
+    -其模块支持JSON等标准输出格式，可采用任何编程语言重写
+  4、对于被托管主机
+    -ansible默认通过SSH协议管理机器
+    -被管理主机要开启ssh服务，允许ansible主机登录
+    -在托管节点上也需要安装Python2.5或以上的版本
+    -如果托管节点上开启里SElinux，需要安装libselinux-python
+  5、安装ansible
+    -可以基于源码运行
+    -源码安装
+      -pip，需要配置扩展软件包源extras
+      -git
+        #yum install epel-release
+        #yum install git python2-pip
+      -pip安装依赖模块
+        #pip install paramiko PyYAML jinja2 httplib2 six
+      -ansible源码下载
+        #git clone git://github.com/ansible/ansible.git
+        #yum install python-setuptools python-devel
+        #python setup.py build
+        #python setup.py install
+      -pip方式安装
+        #pip install ansible                      
+        
+二、
+三、
