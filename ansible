@@ -30,7 +30,143 @@
         #python setup.py build
         #python setup.py install
       -pip方式安装
-        #pip install ansible                      
-        
-二、
-三、
+        #pip install ansible
+    -YUM安装方式
+      -配置yum源
+        ansible-2.4.2.0-2.el7.noarch.rpm         
+        python-passlib-1.6.5-2.el7.noarch.rpm
+        python2-jmespath-0.9.0-3.el7.noarch.rpm
+        python-httplib2-0.9.2-1.el7.noarch.rpm  
+        sshpass-1.06-2.el7.x86_64.rpm
+        python-paramiko-2.1.1-4.el7.noarch.rpm
+      -安装完成后验证
+        #ansible --version    
+二、主及管理
+  1、主机定义与分组
+    -ansible配置文件查找顺序
+      -首先检测ANSIBLE_CONFIG变量定义的配置文件
+      -其次检查当前目录下的./ansible.cfg文件
+      -再次检查当前用户家目录下~/ansible.cfg文件
+      -最后检查/etc/ansible/ansible.cfg文件
+  2、ansible默认配置文件
+      -/etc/ansible/ansible.cfg
+        -inventory定义托管主机地址配置文件
+        -再编辑/etc/ansible/hosts文件，写入远程主机地址
+  3、inventory参数说明
+    - ansible_ssh_host
+    - ansible_ssh_port
+    - ansible_ssh_user
+    - ansible_ssh_pass
+    - ansible_sudo_pass
+    - ansible_sudo_exe
+    - ansible_connection    //与主机连接类型
+    - ansible_ssh_private_key_file  //ssh适用额私钥文件，适用由多个密钥
+    - ansible_shell_type          //目标系统的shell类型
+    - ansible_python_interpreter  //目标主机的python路径，适用情况系统中有多个Python，或者命令路径不是'/usr/bin/python'    
+三、自定义主机定义与分组
+  1、自定义配置文件
+    #vim /myansible/ansible.cfg
+      [defaults]
+      inventory = /myansible/ansible/myhosts
+      host_key_checking = False
+  2、配置主机文件
+    #vim /myansible/myhosts
+      [web]
+      web1
+      web2
+      [db]
+      db1
+      db2
+  3、动态主机
+  
+  
+  
+  
+四、批量执行
+  1、ansible命令基础
+     #ansible <host-pattern> [options]
+      - host-pattern 主机或定义的分组
+      - -m  使用模块，默认使用commond模块
+      - -a  模块参数
+      - -i  inventory文件路径，或可执行脚本
+      - -k  使用交互式登录密码
+      - -e  定义变量
+      - -v  详细信息，-vvvv开启debug模式
+  2、基本命令
+    #ansible all --list-hosts     //列出所有要执行的主机
+    #ansible all -m ping          //批量检测主机
+    #ansible all -m command -a 'id' -k   //批量检测登录主机用户
+  3、批量部署证书文件
+    #cd /root/.ssh/
+    #ssh-keygen
+    #ansible all -m authorized_key -a "user=root exclusive=true managge_dir=true \
+      key='$(</root/.ssh/id_rsa.pub)'" -k
+五、批量配置管理模块
+
+  1、ansible-doc和ping模块     //相当于shell的man
+    #ansible-doc -l       //列出所有模块
+    #ansible-doc modulename     //查看相关模块帮助
+    #ansible host-pattern -m ping   //测试ssh连通性
+    
+  2、command模块         //默认模块，远程执行命令
+    -用法
+      #ansible host-pattern -m command -a '[args]'
+      #ansible all -m command -a 'uptime'     //查看主机负载
+  
+  3、shell|raw模块
+    -shell模块用法基本和command一样，区别是shell模块是通过/bin/sh进行执行命令
+    -raw模块，用法和shell模块一样，但raw没有chdir、creates、removes参数
+      #ansible web1 -m shell -a 'chdir=/tmp touch f2'     //chdir=/tmp相当于cd到/tmp目录下
+      #ansible web1 -m raw -a 'touch f3'
+  
+  4、script模块
+    -可以写脚本然后script模块执行
+      #ansible web1 -m script -a './user.sh'
+  
+  5、copy模块
+    - src：要复制到进程主机的文件在本地的地址,可以是绝对路径,也可以是相对路径。
+            如果路径是一个目录,它将递归复制。在这种情况下,如果路径使用"/"来结尾,则只复制目录里的内容,
+            如果没有使用"/"来结尾,则包含目录在内的整个内容全部复制,类似于rsync
+    - dest：必选项。进程主机的绝对路径,如果源文件是一个目录,那么该路径也必须是个目录
+    - backup：在覆盖之前将原文件备份,备份文件包含时间信息。有两个选项:yes|no
+    - force：如果目标主机包含该文件,但内容不同,如果设置为yes,则强制覆盖,如果为no,
+            则只有当目标主机的目标位置不存在该文件时,才复制。默认为yes
+      #ansible all -m copy -a 'src=/etc/resolv.conf dest=/etc/resolv.conf'   //复制本机的resolv.conf到其他主机
+  
+  6、lineinfile|replace模块
+    -lineinfile以行为基础，整行修改
+      #ansible db -m lineinfile -a 'path=/etc/resolv.conf regexp="^search" line="search tedu.cn"'
+    -replace修改文件的某一部分
+      #ansible db -m replace -a 'path=/etc/resolv.conf regexp="^(search).*" replace="\1 vbr"'
+  
+  7、yum模块
+    #ansible other -m yum -a 'name="lrzsz" state=removed'   //lrzsz软件包名，removed=absent删除
+  
+  8、service模块
+    #ansible other -m service -a 'name="sshd" enabled="yes"  state="started"'  //sshd服务名，开机启动同时启动这个服务
+  
+  9、setup模块
+    -filter过滤指定的关键字
+      #ansible cache -m setup -a 'filter=os'
+      #ansible cache -m setup -a 'filter=ansible_distribution'
+  
+  10、批量部署mariadb
+    #ansible db -m yum -a 'name=mariadb,mariadb-server state=installed'
+    #ansible db -m replace -a "name='/etc/my.cnf' regexp='^(\[mysqld\])' replace='\1\nlog_bin'"
+    #ansible db -m service -a 'name=mariadb state=started enabled=yes'
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
